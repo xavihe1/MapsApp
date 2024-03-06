@@ -13,7 +13,6 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mapsapp.viewModel.MapsViewModel
 import kotlinx.coroutines.launch
