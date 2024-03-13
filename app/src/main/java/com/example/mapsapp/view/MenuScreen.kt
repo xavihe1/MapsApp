@@ -1,6 +1,8 @@
 package com.example.mapsapp.view
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -27,7 +29,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.mapsapp.viewModel.MapsViewModel
 import kotlinx.coroutines.launch
 
-/*
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuScreen(myViewModel: MapsViewModel) {
@@ -50,25 +52,20 @@ fun MenuScreen(myViewModel: MapsViewModel) {
             )
         }
     }) {
-        MyScaffold()
+        Scaffold(
+            topBar = {
+                MyTopAppBar(myViewModel = MapsViewModel(), state = DrawerState) },
+            content = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "Contenido de la pantalla")
+                }
+            }
+        )
     }
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MyTopAppBar(myViewModel: MapsViewModel, state: DrawerState) {
-    val scope = rememberCoroutineScope()
-    TopAppBar(
-        title = { Text(text = "My SuperApp") },
-        navigationIcon = {
-            IconButton(onClick = {
-                scope.launch {
-                    state.open()
-                }
-            }) {
-                Icon(imageVector = Icons.Filled.Menu, contentDescription = "Menu")
-            }
-        }
-    )
-}
-*/
