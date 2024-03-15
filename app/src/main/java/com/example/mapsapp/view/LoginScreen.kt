@@ -33,6 +33,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mapsapp.R
+import com.example.mapsapp.navigation.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +71,7 @@ fun LoginScreen(navController: NavController) {
         
         Button(
             modifier = Modifier.padding(10.dp),
-            onClick = { enabled = false },
+            onClick = { navController.navigate(Routes.Pantalla3.route) },
             enabled = enabled,
         ) {
             Text(text = "Register")

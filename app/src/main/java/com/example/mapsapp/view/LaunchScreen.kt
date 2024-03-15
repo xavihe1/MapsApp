@@ -35,7 +35,7 @@ fun LaunchScreen(navController: NavController) {
         animation = true
         delay(4000)
         navController.popBackStack()
-        navController.navigate(Routes.Pantalla4.route)
+        navController.navigate(Routes.Pantalla2.route)
     }
     Splash(alphaAnim.value)
 }

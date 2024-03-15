@@ -60,6 +60,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    //NAVIGATION
     implementation("androidx.navigation:navigation-compose:2.7.5")
     //MAPS IMPLEMENTATION
     implementation("com.google.maps.android:maps-compose:2.11.4")

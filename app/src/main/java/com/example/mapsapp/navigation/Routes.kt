@@ -6,5 +6,5 @@ sealed class Routes(val route: String) {
     object Pantalla3: Routes("MenuScreen")
     object Pantalla4: Routes("MapScreen")
     object Pantalla5: Routes("AddMarkerScreen")
-    object Pantalla6: Routes("LaunchScreen")
+    object Pantalla6: Routes("MarkerListScreen")
 }

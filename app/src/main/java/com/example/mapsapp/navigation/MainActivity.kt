@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
                     val mapsViewModel by viewModels<MapsViewModel>()
                     NavHost(
                         navController = navigationController,
-                        startDestination = Routes.Pantalla3.route
+                        startDestination = Routes.Pantalla1.route
                     ) {
                         composable(Routes.Pantalla1.route) { LaunchScreen(navigationController) }
                         composable(Routes.Pantalla2.route) { LoginScreen(navigationController) }
