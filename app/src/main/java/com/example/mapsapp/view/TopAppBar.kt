@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 fun MyTopAppBar(myViewModel: MapsViewModel, state: DrawerState) {
     val scope = rememberCoroutineScope()
     TopAppBar(
-        title = { Text(text = "My SuperApp") },
+        title = { Text(text = "MapsApp") },
         navigationIcon = {
             IconButton(onClick = {
                 scope.launch {

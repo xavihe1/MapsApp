@@ -18,10 +18,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mapsapp.Manifest
 import com.example.mapsapp.ui.theme.MapsAppTheme
 import com.example.mapsapp.view.LaunchScreen
+import com.example.mapsapp.view.LoginScreen
 import com.example.mapsapp.view.MapScreen
+import com.example.mapsapp.view.MenuScreen
 //import com.example.mapsapp.view.MenuScreen
 import com.example.mapsapp.viewModel.MapsViewModel
 import com.google.accompanist.permissions.rememberPermissionState
@@ -47,11 +48,11 @@ class MainActivity : ComponentActivity() {
                     val mapsViewModel by viewModels<MapsViewModel>()
                     NavHost(
                         navController = navigationController,
-                        startDestination = Routes.Pantalla4.route
+                        startDestination = Routes.Pantalla3.route
                     ) {
                         composable(Routes.Pantalla1.route) { LaunchScreen(navigationController) }
-                        composable(Routes.Pantalla2.route) {  }
-                        composable(Routes.Pantalla3.route) {  }
+                        composable(Routes.Pantalla2.route) { LoginScreen(navigationController) }
+                        composable(Routes.Pantalla3.route) { MenuScreen(myViewModel, navigationController) }
                         composable(Routes.Pantalla4.route) { MapScreen(navigationController) }
                         composable(Routes.Pantalla5.route) {  }
                         composable(Routes.Pantalla6.route) {  }
