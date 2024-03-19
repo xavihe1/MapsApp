@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.navigation.NavHostController
-import com.example.mapsapp.Manifest
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.viewModel.MapsViewModel
 
