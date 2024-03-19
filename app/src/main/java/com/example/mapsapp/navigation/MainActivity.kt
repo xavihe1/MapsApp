@@ -25,6 +25,7 @@ import com.example.mapsapp.view.LoginScreen
 import com.example.mapsapp.view.MapScreen
 import com.example.mapsapp.view.MarkerListScreen
 import com.example.mapsapp.view.MenuScreen
+import com.example.mapsapp.view.TakePhotoScreen
 //import com.example.mapsapp.view.MenuScreen
 import com.example.mapsapp.viewModel.MapsViewModel
 import com.google.accompanist.permissions.rememberPermissionState
@@ -58,6 +59,7 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.Pantalla4.route) { MapScreen(navigationController) }
                         composable(Routes.Pantalla5.route) { AddMarkerScreen(navigationController) }
                         composable(Routes.Pantalla6.route) { MarkerListScreen(navigationController) }
+                        composable(Routes.Pantalla7.route) { TakePhotoScreen(navigationController, myViewModel)}
                     }
                 }
             }
@@ -65,90 +67,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
-/*
-
-val permissionState = 
-    rememberPermissionState(permission = Manifest.permission.ACCES_FINE_LOCATION)
-LaunchedEffect(Unit) {
-    permissionState.launchPermissionRequest()
-}
-if (permissionState.status.isGranted) {
-    ShowMap(myViewModel)
-} else {
-    Text(text = "Need permission")
-}
-
-
-
-val context = LocalContext.current
-val fusedLocationProviderClient =
-    remember { LocationServices.getFusedLocationProviderClient(context) }
-var lastKnownLocation by remember { mutableStateOf<Location?>(null) }
-var deviceLatLng by remember { mutableStateOf(LatLng(0.0, 0.0)) }
-val cameraPositionState =
-    rememberCameraPositionState { position = CameraPosition.fromLatLngZoom(deviceLatLng, 18f) }
-val locationResult = fusedLocationProviderClient.getCurrentLocation(100, null)
-
-locationResult.addOnCompleteListener(context as MainActivity) { task ->
-    if (task.isSuccessful) {
-        lastKnownLocation = task.result
-        deviceLatLng = LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
-        cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
-    } else {
-        Log.e("Error", "Exception: %s", task.exception)
-    }
-}
-
-
-
-val permissionState =
-    rememberPermissionState(permission = Manifest.permission.CAMERA)
-LaunchedEffect(Unit) {
-    permissionState.launchPermissionRequest()
-}
-if (permissionState.status.isGranted) {
-    CameraScreen()
-} else {
-    Text("Need permission")
-}
-
-
-
-val context = LocalContext.current
-val controller = remember {
-    LifecycleCameraController(context).apply {
-        CameraController.IMAGE_CAPTURE
-    }
-}
-
-
-
-Box(modifier = Modifier.fillMaxSize()) {
-    CameraPreview(controller = controller, modifier = Modifier.fillMaxSize())
-    IconButton(
-        onClick = {
-            controller.cameraSelector =
-                if (controller.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
-                    CameraSelector.DEFAULT_FRONT_CAMERA
-                } else {
-                    CameraSelector.DEFAULT_BACK_CAMERA
-                }
-        },
-        modifier = Modifier.offset(16.dp, 16.dp)
-    ) {
-        Icon(imageVector = Icons.Default.Cameraswitch, contentDescription = "Switch Camera")
-    }
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()) {
-        IconButton(onClick = {
-            takePhoto(context, controller) { photo ->
-                //Do something with the photo
-            }
-        }) {
-            Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = "Take Photo")
-        }
-    }
-}
- */
