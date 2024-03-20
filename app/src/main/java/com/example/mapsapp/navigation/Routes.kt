@@ -9,4 +9,5 @@ sealed class Routes(val route: String) {
     object Pantalla6: Routes("MarkerListScreen")
     object Pantalla7: Routes("TakePhotoScreen")
     object Pantalla8: Routes("GalleryScreen")
+    object Pantalla9: Routes("CameraScreen")
 }

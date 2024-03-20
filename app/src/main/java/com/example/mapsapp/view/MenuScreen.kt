@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.viewModel.MapsViewModel
 import kotlinx.coroutines.launch
 
@@ -38,6 +40,39 @@ fun MenuScreen(myViewModel: MapsViewModel, navController: NavController) {
             Divider()
             NavigationDrawerItem(
                 label = { Text(text = "Drawer Item 1") },
+                selected = false,
+                onClick = {
+                    scope.launch {
+                        state.close()
+                    }
+                }
+            )
+            NavigationDrawerItem(
+                label = {
+                    Button(
+                        onClick = {
+                            navigationController.navigate(Routes.Pantalla4.route) }
+                    ) {
+                        Text(text = "Map")
+                    }
+                },
+                selected = false,
+                onClick = {
+                    scope.launch {
+                        state.close()
+                    }
+                }
+            )
+
+            NavigationDrawerItem(
+                label = {
+                    Button(
+                        onClick = {
+                            navigationController.navigate(Routes.Pantalla9.route) }
+                    ) {
+                    Text(text = "Take a Photo")
+                    }
+                        },
                 selected = false,
                 onClick = {
                     scope.launch {
