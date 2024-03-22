@@ -1,5 +1,6 @@
 package com.example.mapsapp.view
 
+import android.Manifest
 import android.content.Context
 import android.graphics.Bitmap
 import android.location.Location
@@ -38,12 +39,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
+import com.example.mapsapp.navigation.MainActivity
 /*
 import com.example.mapsapp.Manifest
 import com.example.mapsapp.navigation.MainActivity
-
- */
+*/
 import com.example.mapsapp.viewModel.MapsViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.location.LocationServices
@@ -51,6 +53,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.rememberCameraPositionState
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun TakePhotoScreen(navigationController: NavHostController, myViewModel: MapsViewModel) {
     val context = LocalContext.current
@@ -59,16 +62,13 @@ fun TakePhotoScreen(navigationController: NavHostController, myViewModel: MapsVi
             CameraController.IMAGE_CAPTURE
         }
     }
-
-
-    /*
     val permissionState =
-        rememberPermissionState(permission = android.Manifest.permission.ACCESS_FINE_LOCATION)
+        rememberPermissionState(permission = Manifest.permission.ACCESS_FINE_LOCATION)
     LaunchedEffect(Unit) {
         permissionState.launchPermissionRequest()
     }
     if (permissionState.status.isGranted) {
-        ShowMap(myViewModel)
+        MapScreen(navigationController)
     } else {
         Text(text = "Need Permission")
     }
@@ -89,9 +89,6 @@ fun TakePhotoScreen(navigationController: NavHostController, myViewModel: MapsVi
             Log.e("Error", "Exception: %s", task.exception)
         }
     }
-     */
-
-
 
 
     Box(modifier = Modifier.fillMaxSize()) {
