@@ -62,6 +62,7 @@ fun TakePhotoScreen(navigationController: NavHostController, myViewModel: MapsVi
             CameraController.IMAGE_CAPTURE
         }
     }
+
     val permissionState =
         rememberPermissionState(permission = Manifest.permission.ACCESS_FINE_LOCATION)
     LaunchedEffect(Unit) {
