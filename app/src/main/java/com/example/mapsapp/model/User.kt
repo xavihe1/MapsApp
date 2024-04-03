@@ -1,5 +1,7 @@
 package com.example.mapsapp.model
 
+import com.google.firebase.firestore.FirebaseFirestore
+
 data class User(
     var userId: String? = null,
     var userName: String,
@@ -8,3 +10,4 @@ data class User(
 ) {
     constructor(): this(null, "", 0, null)
 }
+
