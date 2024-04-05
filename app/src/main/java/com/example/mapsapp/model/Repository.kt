@@ -9,11 +9,11 @@ class Repository {
 
     //Operació SELECT
     fun getUsers(): CollectionReference {
-        return database.collection("users")
+        return myViewModel.getDatabase().collection("users")
     }
 
     //Operació SELECT (un element)
     fun getUser(userId: String): DocumentReference {
-        return database.collection("users").document(userId)
+        return myViewModel.getDatabase().collection("users").document(userId)
     }
 }

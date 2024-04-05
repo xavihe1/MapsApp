@@ -55,6 +55,10 @@ class MapsViewModel: ViewModel() {
 
     private val database = FirebaseFirestore.getInstance()
 
+    fun getDatabase(): FirebaseFirestore {
+        return database
+    }
+
     //Operació INSERT
     fun addUser(user: User) {
         database.collection("users")
