@@ -2,8 +2,10 @@ package com.example.mapsapp.view
 
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -33,15 +35,21 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.NavHostController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mapsapp.R
 import com.example.mapsapp.viewModel.MapsViewModel
+import com.google.firebase.storage.FirebaseStorage
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun GalleryScreen(navigationController: NavHostController, myViewModel: MapsViewModel) {
     val context = LocalContext.current
     val img: Bitmap? = ContextCompat.getDrawable(context, R.drawable.empty_image)?.toBitmap()
     var bitmap by remember { mutableStateOf(img) }
-    var launchImage = rememberLauncherForActivityResult(
+    val launchImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = {
             bitmap = if (Build.VERSION.SDK_INT < 28) {
@@ -70,10 +78,30 @@ fun GalleryScreen(navigationController: NavHostController, myViewModel: MapsView
 
         Image(
             bitmap = bitmap!!.asImageBitmap(), contentDescription = null,
-            contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
+            contentScale = ContentScale.Crop, modifier = Modifier
+                .clip(CircleShape)
                 .size(250.dp)
                 .background(Color.Blue)
                 .border(width = 1.dp, color = Color.White, shape = CircleShape)
         )
     }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun uploadImage(imageUri: Uri) {
+    val formatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault())
+    val now = Date()
+    val fileName = formatter.format(now)
+    val storage = FirebaseStorage.getInstance().getReference("images/$fileName")
+    storage.putFile(imageUri)
+        .addOnSuccessListener {
+            Log.i("IMAGE UPLOAD", "Image upload successfully")
+            storage.downloadUrl.addOnSuccessListener {
+                Log.i("IMAGEN", it.toString())
+            }
+        }
+        .addOnFailureListener {
+            Log.i("IMAGE UPLOAD", "Image upload failed")
+        }
 }

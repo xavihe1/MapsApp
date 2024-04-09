@@ -22,6 +22,7 @@ class MapsViewModel: ViewModel() {
     val showPermissionDenied = _showPermissionDenied
 
 
+
     //FIREBASE CLOUD FIRESTORE
     private val _userList = MutableLiveData<List<User>>()
     val userList = _userList
@@ -37,8 +38,21 @@ class MapsViewModel: ViewModel() {
 
 
     //AUTHENTICATION
-    private val _goToNext = MutableLiveData(false)
+    private var _goToNext = MutableLiveData(false)
     val goToNext = _goToNext
+
+    private val _userId = MutableLiveData<Int>()
+    val userId = _userId
+
+    private val _loggedUser = MutableLiveData(false)
+    val loggedUser = _loggedUser
+
+    private val _showProcessingBar = MutableLiveData<Boolean>(false)
+    val showProgressBar = _showProcessingBar
+
+    fun modifyProcessing(show: Boolean) {
+        showProgressBar.value = show
+    }
 
 
     fun setCameraPermissionGranted(granted: Boolean) {
@@ -141,7 +155,7 @@ class MapsViewModel: ViewModel() {
                     _goToNext.value = false
                     Log.d("Error", "Error creating user: ${task.result}")
                 }
-                modifyProcessing()
+                modifyProcessing(false)
             }
     }
 
@@ -156,11 +170,21 @@ class MapsViewModel: ViewModel() {
                     _goToNext.value = false
                     Log.d("Error", "Error signing in ¡: ${task.result}")
                 }
-                modifyProcessing()
+                modifyProcessing(false)
             }
     }
 
     fun logout() {
         auth.signOut()
+    }
+
+    fun selectFunctionsFirestore() {
+        repository.getUsers()
+            .whereGreaterThan("", "")
+            .whereEqualTo("", "")
+            .whereGreaterThanOrEqualTo("", "")
+            .whereLessThan("", "")
+            .whereLessThanOrEqualTo("", "")
+            .whereNotEqualTo("", "")
     }
 }
