@@ -1,5 +1,6 @@
 package com.example.mapsapp.viewModel
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,10 @@ import com.example.mapsapp.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MapsViewModel: ViewModel() {
     private val repository = Repository()
@@ -41,10 +46,10 @@ class MapsViewModel: ViewModel() {
     private var _goToNext = MutableLiveData(false)
     val goToNext = _goToNext
 
-    private val _userId = MutableLiveData<Int>()
+    private val _userId = MutableLiveData<String>()
     val userId = _userId
 
-    private val _loggedUser = MutableLiveData(false)
+    private val _loggedUser = MutableLiveData<String>()
     val loggedUser = _loggedUser
 
     private val _showProcessingBar = MutableLiveData<Boolean>(false)
@@ -122,6 +127,7 @@ class MapsViewModel: ViewModel() {
         }
     }
 
+
     //Operació SELECT
     fun getUser(userId: String) {
         repository.getUser(userId).addSnapshotListener { value, error ->
@@ -174,6 +180,7 @@ class MapsViewModel: ViewModel() {
             }
     }
 
+
     fun logout() {
         auth.signOut()
     }
@@ -186,5 +193,25 @@ class MapsViewModel: ViewModel() {
             .whereLessThan("", "")
             .whereLessThanOrEqualTo("", "")
             .whereNotEqualTo("", "")
+    }
+
+
+
+    var uri: Uri? = null
+    fun uploadImage(imageUri: Uri) {
+        val formatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault())
+        val now = Date()
+        val fileName = formatter.format(now)
+        val storage = FirebaseStorage.getInstance().getReference("images/$fileName")
+        storage.putFile(imageUri)
+            .addOnSuccessListener {
+                Log.i("IMAGE UPLOAD", "Image upload successfully")
+                storage.downloadUrl.addOnSuccessListener {
+                    Log.i("IMAGEN", it.toString())
+                }
+            }
+            .addOnFailureListener {
+                Log.i("IMAGE UPLOAD", "Image upload failed")
+            }
     }
 }
