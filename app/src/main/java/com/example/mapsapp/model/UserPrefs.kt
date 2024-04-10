@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.google.firebase.firestore.remote.Datastore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.prefs.Preferences
@@ -12,7 +13,7 @@ class UserPrefs(private val context: Context) {
 
     //CREATE A DATASTORE
     companion object {
-        private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_prefs")
+        private val Context.dataStore: Datastore<Preferences> by preferencesDataStore(name = "user_prefs")
         val STORE_USERNAME = stringPreferencesKey("store_username")
         val STORE_USERPASS = stringPreferencesKey("store_userpass")
     }
