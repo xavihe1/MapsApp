@@ -63,33 +63,9 @@ fun TakePhotoScreen(navigationController: NavHostController, myViewModel: MapsVi
         }
     }
 
-    val permissionState =
-        rememberPermissionState(permission = Manifest.permission.ACCESS_FINE_LOCATION)
-    LaunchedEffect(Unit) {
-        permissionState.launchPermissionRequest()
-    }
-    if (permissionState.status.isGranted) {
-        MapScreen(navigationController)
-    } else {
-        Text(text = "Need Permission")
-    }
-    val fusedLocationProviderClient =
-        remember { LocationServices.getFusedLocationProviderClient(context) }
-    var lastKnownLocation by remember { mutableStateOf<Location?>(null) }
-    var deviceLatLng by remember { mutableStateOf(LatLng(0.0, 0.0)) }
-    val cameraPositionState =
-        rememberCameraPositionState { position = CameraPosition.fromLatLngZoom(deviceLatLng, 18f) }
-    val locationResult = fusedLocationProviderClient.getCurrentLocation(100, null)
 
-    locationResult.addOnCompleteListener(context as MainActivity) { task ->
-        if (task.isSuccessful) {
-            lastKnownLocation = task.result
-            deviceLatLng = LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
-        } else {
-            Log.e("Error", "Exception: %s", task.exception)
-        }
-    }
+
+
 
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -130,24 +106,6 @@ fun TakePhotoScreen(navigationController: NavHostController, myViewModel: MapsVi
             }
         }
     }
-}
-
-private fun takePhoto(context: Context,
-                      controller: LifecycleCameraController, onPhotoTaken: (Bitmap) -> Unit) {
-    controller.takePicture(
-        ContextCompat.getMainExecutor(context),
-        object : ImageCapture.OnImageCapturedCallback() {
-            override fun onCaptureSuccess(image: ImageProxy) {
-                super.onCaptureSuccess(image)
-                onPhotoTaken(image.toBitmap())
-            }
-
-            override fun onError(exception: ImageCaptureException) {
-                super.onError(exception)
-                Log.e("Camera", "Error taken photo", exception)
-            }
-        }
-    )
 }
 
 @Composable

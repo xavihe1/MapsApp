@@ -1,7 +1,14 @@
 package com.example.mapsapp.viewModel
 
+import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
+import androidx.camera.view.LifecycleCameraController
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.model.Repository
@@ -25,6 +32,37 @@ class MapsViewModel: ViewModel() {
 
     private val _showPermissionDenied = MutableLiveData(false)
     val showPermissionDenied = _showPermissionDenied
+
+
+    fun setCameraPermissionGranted(granted: Boolean) {
+        _cameraPermissionGranted.value = granted
+    }
+
+    fun setShouldShowPermissionRationale(should: Boolean) {
+        _shouldShowPermissionRationale.value = should
+    }
+
+    fun setShowPermissionDenied(denied: Boolean) {
+        _showPermissionDenied.value = denied
+    }
+
+    private fun takePhoto(context: Context,
+                          controller: LifecycleCameraController, onPhotoTaken: (Bitmap) -> Unit) {
+        controller.takePicture(
+            ContextCompat.getMainExecutor(context),
+            object : ImageCapture.OnImageCapturedCallback() {
+                override fun onCaptureSuccess(image: ImageProxy) {
+                    super.onCaptureSuccess(image)
+                    onPhotoTaken(image.toBitmap())
+                }
+
+                override fun onError(exception: ImageCaptureException) {
+                    super.onError(exception)
+                    Log.e("Camera", "Error taken photo", exception)
+                }
+            }
+        )
+    }
 
 
 
@@ -57,19 +95,6 @@ class MapsViewModel: ViewModel() {
 
     fun modifyProcessing(show: Boolean) {
         showProgressBar.value = show
-    }
-
-
-    fun setCameraPermissionGranted(granted: Boolean) {
-        _cameraPermissionGranted.value = granted
-    }
-
-    fun setShouldShowPermissionRationale(should: Boolean) {
-        _shouldShowPermissionRationale.value = should
-    }
-
-    fun setShowPermissionDenied(denied: Boolean) {
-        _showPermissionDenied.value = denied
     }
 
 
