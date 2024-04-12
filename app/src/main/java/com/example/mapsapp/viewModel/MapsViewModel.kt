@@ -72,39 +72,8 @@ class MapsViewModel: ViewModel() {
         _showPermissionDenied.value = denied
     }
 
+
     private val database = FirebaseFirestore.getInstance()
-
-    fun getDatabase(): FirebaseFirestore {
-        return database
-    }
-
-    //Operació INSERT
-    fun addUser(user: User) {
-        database.collection("users")
-            .add(
-                hashMapOf(
-                    "userName" to user.userName,
-                    "age" to user.age,
-                    "profilePicture" to user.profilePicture
-                )
-            )
-    }
-
-    //Operació UPDATE
-    fun editUser(editedUser: User) {
-        database.collection("users").document(editedUser.userId!!).set(
-            hashMapOf(
-                "userName" to editedUser.userName,
-                "age" to editedUser.age,
-                "profilePicture" to editedUser.profilePicture
-            )
-        )
-    }
-
-    //Operació DELETE
-    fun deleteUser(userId: String) {
-        database.collection("users").document(userId).delete()
-    }
 
     //Operació SELECT
 
@@ -132,7 +101,7 @@ class MapsViewModel: ViewModel() {
     fun getUser(userId: String) {
         repository.getUser(userId).addSnapshotListener { value, error ->
             if (error != null) {
-                Log.w("UserRepository", "Listen failed.", error)
+                Log.w("UserRepository", "Listen Failed.", error)
                 return@addSnapshotListener
             }
             if (value != null && value.exists()) {
