@@ -9,10 +9,13 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.view.LifecycleCameraController
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.model.Repository
 import com.example.mapsapp.model.User
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
@@ -24,6 +27,26 @@ import java.util.Locale
 class MapsViewModel: ViewModel() {
     private val repository = Repository()
 
+    //MAP
+    private val _bottomSheetVisible = MutableLiveData<Boolean>()
+    val bottomSheetVisible: LiveData<Boolean> = _bottomSheetVisible
+
+    fun setBottomSheetVisible(visible: Boolean) {
+        _bottomSheetVisible.value = visible
+    }
+
+
+    fun addMarker(name: String, description: String, position: LatLng) {
+        val marker = MarkerOptions().position(position).title(name).snippet(description)
+        googleMap?.addMarker(marker)
+    }
+
+
+
+
+
+
+    //CAMERA
     private val _cameraPermissionGranted = MutableLiveData(false)
     val cameraPermissionGranted = _cameraPermissionGranted
 

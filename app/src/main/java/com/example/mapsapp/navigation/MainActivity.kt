@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.Pantalla1.route) { LaunchScreen(navigationController) }
                         composable(Routes.Pantalla2.route) { LoginScreen(navigationController) }
                         composable(Routes.Pantalla3.route) { MenuScreen(myViewModel, navigationController) }
-                        composable(Routes.Pantalla4.route) { MapScreen(navigationController) }
+                        composable(Routes.Pantalla4.route) { MapScreen(navigationController, myViewModel) }
                         composable(Routes.Pantalla5.route) { AddMarkerScreen(navigationController) }
                         composable(Routes.Pantalla6.route) { MarkerListScreen(navigationController) }
                         composable(Routes.Pantalla7.route) { TakePhotoScreen(navigationController, myViewModel) }
