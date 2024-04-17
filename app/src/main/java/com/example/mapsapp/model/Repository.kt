@@ -9,7 +9,6 @@ class Repository {
     private val myViewModel = MapsViewModel()
     private val database = FirebaseFirestore.getInstance()
 
-
     //Operació INSERT
     fun addUser(user: User) {
         database.collection("users")
@@ -49,7 +48,5 @@ class Repository {
         return database.collection("users").document(userId)
     }
 
-
-    suspend fun getUser() = myViewModel.getUser("")
     suspend fun register() = myViewModel.register("", "")
 }

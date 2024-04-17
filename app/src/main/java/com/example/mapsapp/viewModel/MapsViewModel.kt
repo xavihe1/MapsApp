@@ -43,9 +43,6 @@ class MapsViewModel: ViewModel() {
 
 
 
-
-
-
     //CAMERA
     private val _cameraPermissionGranted = MutableLiveData(false)
     val cameraPermissionGranted = _cameraPermissionGranted
@@ -121,7 +118,6 @@ class MapsViewModel: ViewModel() {
     }
 
 
-    private val database = FirebaseFirestore.getInstance()
 
     //Operació SELECT
 
@@ -166,7 +162,23 @@ class MapsViewModel: ViewModel() {
         }
     }
 
+    //Operació INSERT
+    fun addUser(user: User) {
+        repository.addUser(user)
+    }
 
+    //Operació UPDATE
+    fun editUser(editedUser: User) {
+        repository.editUser(editedUser)
+    }
+
+    //Operació DELETE
+    fun deleteUser(userId: String) {
+        repository.deleteUser(userId)
+    }
+
+
+    //AUTHENTICATION
     private val auth = FirebaseAuth.getInstance()
 
     fun register(username: String, password: String) {
@@ -197,10 +209,11 @@ class MapsViewModel: ViewModel() {
             }
     }
 
-
     fun logout() {
         auth.signOut()
     }
+
+
 
     fun selectFunctionsFirestore() {
         repository.getUsers()
