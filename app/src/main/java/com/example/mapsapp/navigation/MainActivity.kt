@@ -37,7 +37,6 @@ class MainActivity : ComponentActivity() {
                     //MenuScreen(myViewModel = MapsViewModel())
 
                     val navigationController = rememberNavController()
-                    val mapsViewModel by viewModels<MapsViewModel>()
                     NavHost(
                         navController = navigationController,
                         startDestination = Routes.Pantalla1.route
