@@ -34,7 +34,6 @@ class MapsViewModel: ViewModel() {
         _bottomSheetVisible.value = visible
     }
 
-
     fun addMarker(name: String, description: String, position: LatLng) {
         val marker = MarkerOptions().position(position).title(name).snippet(description)
         googleMap?.addMarker(marker)
@@ -119,7 +118,6 @@ class MapsViewModel: ViewModel() {
 
 
     //Operació SELECT
-
     fun getUsers() {
         repository.getUsers().addSnapshotListener { value, error ->
             if (error != null) {
