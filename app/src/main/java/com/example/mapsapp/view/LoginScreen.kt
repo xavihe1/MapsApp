@@ -38,7 +38,7 @@ fun LoginScreen(navController: NavController) {
     val myViewModel = MapsViewModel()
     var myText by remember { mutableStateOf("") }
     var psswrd by remember { mutableStateOf("") }
-    var enabled by remember { mutableStateOf(true) }
+    val enabled by remember { mutableStateOf(true) }
 
 
     val context = LocalContext.current

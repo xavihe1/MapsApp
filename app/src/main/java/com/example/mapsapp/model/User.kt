@@ -1,6 +1,5 @@
 package com.example.mapsapp.model
 
-import com.google.firebase.firestore.FirebaseFirestore
 
 data class User(
     var userId: String? = null,
