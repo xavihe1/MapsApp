@@ -66,8 +66,6 @@ fun TakePhotoScreen(navigationController: NavHostController, myViewModel: MapsVi
 
 
 
-
-
     Box(modifier = Modifier.fillMaxSize()) {
         CameraPreview(controller = controller, modifier = Modifier.fillMaxSize())
         IconButton(

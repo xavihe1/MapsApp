@@ -227,6 +227,7 @@ class MapsViewModel: ViewModel() {
 
 
 
+    //FIREBASE STORAGE
     var uri: Uri? = null
     fun uploadImage(imageUri: Uri) {
         val formatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault())
@@ -244,4 +245,13 @@ class MapsViewModel: ViewModel() {
                 Log.i("IMAGE UPLOAD", "Image upload failed")
             }
     }
+
+    /*
+    GlideImage(
+        model = imageUrl,
+        contentDescription = "Image from Storage",
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.size(100.dp)
+    )
+     */
 }

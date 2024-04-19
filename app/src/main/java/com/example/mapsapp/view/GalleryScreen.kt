@@ -51,7 +51,7 @@ fun GalleryScreen(navigationController: NavHostController, myViewModel: MapsView
     var bitmap by remember { mutableStateOf(img) }
     val launchImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
-        onResult = {result ->
+        onResult = {
             bitmap = if (Build.VERSION.SDK_INT < 28) {
                 MediaStore.Images.Media.getBitmap(context.contentResolver, it)
             } else {
@@ -62,8 +62,6 @@ fun GalleryScreen(navigationController: NavHostController, myViewModel: MapsView
                     ImageDecoder.decodeBitmap(it1)
                 }!!
             }
-            bitmap = getImage(context, it)
-            uri = result
         }
     )
 
@@ -86,11 +84,26 @@ fun GalleryScreen(navigationController: NavHostController, myViewModel: MapsView
                 .background(Color.Blue)
                 .border(width = 1.dp, color = Color.White, shape = CircleShape)
         )
-        
-        Button(onClick = {
-            if (uri != null) myViewModel.uploadImage(uri)
-        }) {
-            Text(text = "Upload Image")
-        }
     }
 }
+
+
+
+/*
+//SUBIR IMAGEN AL STORAGE
+
+val launchImage = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.GetContent(),
+    onResult = {
+        bitmap = getImage(context, it)
+        uri = it
+    }
+)
+
+Button(onClick = {
+    if (uri != null) myViewModel.uploadImage(uri)
+}) {
+    Text(text = "Upload image")
+}
+
+ */

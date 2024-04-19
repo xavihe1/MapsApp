@@ -40,6 +40,7 @@ fun LoginScreen(navController: NavController) {
     var psswrd by remember { mutableStateOf("") }
     var enabled by remember { mutableStateOf(true) }
 
+
     val context = LocalContext.current
     val userPrefs = UserPrefs(context)
     val storedUserData = userPrefs.getUserData.collectAsState(initial = emptyList())
@@ -54,6 +55,7 @@ fun LoginScreen(navController: NavController) {
     CoroutineScope(Dispatchers.IO).launch {
         userPrefs.saveUserData(username = "", userpass = "")
     }
+
 
     Column(
         modifier = Modifier.fillMaxSize(),
