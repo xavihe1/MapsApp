@@ -212,6 +212,7 @@ class MapsViewModel: ViewModel() {
 
 
 
+    //FILTRAR DADES FIRESTORE
     fun selectFunctionsFirestore() {
         repository.getUsers()
             .whereGreaterThan("", "")
