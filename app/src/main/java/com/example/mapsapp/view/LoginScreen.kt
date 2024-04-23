@@ -2,6 +2,7 @@ package com.example.mapsapp.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -23,6 +25,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,7 +50,6 @@ fun LoginScreen(navController: NavController) {
     val myViewModel = MapsViewModel()
     var myText by remember { mutableStateOf("") }
     var psswrd by remember { mutableStateOf("") }
-    val enabled by remember { mutableStateOf(true) }
 
     val context = LocalContext.current
     val userPrefs = UserPrefs(context)
@@ -120,8 +122,8 @@ fun LoginScreen(navController: NavController) {
         ) {
             Button(
                 modifier = Modifier.padding(10.dp),
-                onClick = { navController.navigate(Routes.Pantalla3.route) },
-                enabled = enabled,
+                onClick = { myViewModel.register(myText, psswrd) },
+                enabled = myText.isNotEmpty() && psswrd.isNotEmpty() && !(myViewModel.showProgressBar.value ?: false),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Register")
@@ -131,6 +133,25 @@ fun LoginScreen(navController: NavController) {
                         modifier = Modifier.padding(start = 4.dp)
                     )
                 }
+            }
+        }
+    }
+    //Observamos el estado del goToNext para navegar a la siguiente pantalla
+    val goToNext by myViewModel.goToNext.observeAsState()
+    goToNext?.let {
+        if (it) {
+            navController.navigate(Routes.Pantalla3.route)
+        }
+    }
+    //Observamos el estado de showProgressBar para mostrar el indicador de carga
+    val showProgressBar by myViewModel.showProgressBar.observeAsState()
+    showProgressBar?.let {showProgress ->
+        if (showProgress) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
         }
     }
