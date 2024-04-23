@@ -20,6 +20,7 @@ import com.example.mapsapp.view.LoginScreen
 import com.example.mapsapp.view.MapScreen
 import com.example.mapsapp.view.MarkerListScreen
 import com.example.mapsapp.view.MenuScreen
+import com.example.mapsapp.view.RegisterScreen
 import com.example.mapsapp.view.TakePhotoScreen
 import com.example.mapsapp.viewModel.MapsViewModel
 
@@ -50,6 +51,7 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.Pantalla7.route) { TakePhotoScreen(navigationController, myViewModel) }
                         composable(Routes.Pantalla8.route) { GalleryScreen(navigationController, myViewModel) }
                         composable(Routes.Pantalla9.route) { CameraScreen(navigationController, myViewModel) }
+                        composable(Routes.Pantalla10.route) { RegisterScreen(navigationController) }
                     }
                 }
             }

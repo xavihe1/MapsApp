@@ -48,5 +48,7 @@ class Repository {
         return database.collection("users").document(userId)
     }
 
-    suspend fun register() = myViewModel.register("", "")
+    fun getMarkers(): CollectionReference {
+        return database.collection("markers")
+    }
 }
