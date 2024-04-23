@@ -3,12 +3,19 @@ package com.example.mapsapp.view
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -40,7 +47,6 @@ fun LoginScreen(navController: NavController) {
     var psswrd by remember { mutableStateOf("") }
     val enabled by remember { mutableStateOf(true) }
 
-
     val context = LocalContext.current
     val userPrefs = UserPrefs(context)
     val storedUserData = userPrefs.getUserData.collectAsState(initial = emptyList())
@@ -56,7 +62,6 @@ fun LoginScreen(navController: NavController) {
         userPrefs.saveUserData(username = "", userpass = "")
     }
 
-
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -70,7 +75,7 @@ fun LoginScreen(navController: NavController) {
                 .clip(RoundedCornerShape(25f))
                 .padding(5.dp)
         )
-        
+
         TextField(
             modifier = Modifier.padding(10.dp),
             value = myText,
@@ -83,16 +88,31 @@ fun LoginScreen(navController: NavController) {
             onValueChange = { psswrd = it },
             label = { Text(text = "Enter your password") }
         )
-        
-        Button(
-            modifier = Modifier.padding(10.dp),
-            onClick = { navController.navigate(Routes.Pantalla3.route) },
-            enabled = enabled,
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "Register")
+            Button(
+                modifier = Modifier.padding(10.dp),
+                onClick = { /* action on click */ },
+                enabled = enabled,
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Register")
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = null,
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+            }
         }
     }
 }
+
 
 
 
