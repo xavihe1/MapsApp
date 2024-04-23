@@ -4,16 +4,30 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.health.connect.datatypes.ExerciseRoute
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -43,7 +57,18 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import com.example.mapsapp.navigation.MainActivity
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.maps.android.compose.MapProperties
+import kotlinx.coroutines.launch
 
 
 data class MarkerInfo(
@@ -54,51 +79,203 @@ data class MarkerInfo(
 
 val REQUEST_LOCATION_PERMISSION = 123
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class,
+    ExperimentalPermissionsApi::class
+)
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
-fun MapScreen(navigationController: NavHostController, myViewModel: MapsViewModel) {
-    val context = LocalContext.current
-    val fusedLocationProviderClient: FusedLocationProviderClient = remember(context) {
-        LocationServices.getFusedLocationProviderClient(context)
-    }
-    val deviceLatLng by remember { mutableStateOf(LatLng(0.0, 0.0)) }
-    val cameraPositionState =
-        rememberCameraPositionState { position = CameraPosition.fromLatLngZoom(deviceLatLng, 18f) }
-    val bottomSheetVisible by myViewModel.bottomSheetVisible.observeAsState(false)
-    val requestPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            searchLocationPermissionGranted(fusedLocationProviderClient, deviceLatLng, cameraPositionState, context)
-        } else {
-            Log.d("Permission", "Permission denied")
-        }
-    }
-    LaunchedEffect(Unit) {
-        when (PackageManager.PERMISSION_GRANTED) {
-            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                searchLocationPermissionGranted(fusedLocationProviderClient, deviceLatLng, cameraPositionState, context)
-            }
-            else -> {
-                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-            }
-        }
+fun MapScreen(navController, myViewModel: MapsViewModel) {
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    val showBottomSheet by myViewModel.showBottomSheet.observeAsState(initial = false)
+    val marcadores by myViewModel.markers.observeAsState(emptyList())
+    val texto: String by myViewModel.dropDownText.observeAsState("Mostrar Todos")
+    val isLoading: Boolean by myViewModel.loadingMarkers.observeAsState(initial = false)
+    myViewModel.getMarkers()
+
+    if (!myViewModel.userLogged()) {
+        myViewModel.logout(context = LocalContext.current, navController)
     }
 
-    MyDrawer(myViewModel = myViewModel) {
+    if (!isLoading) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            ContingutGoogleMaps(
-                deviceLocation = deviceLatLng,
-                cameraPositionState = cameraPositionState,
-                myViewModel = myViewModel,
-                bottomSheetVisible = bottomSheetVisible,
-                navigationController = navigationController
+            CircularProgressIndicator(
+                modifier = Modifier.width(64.dp),
+                color = MaterialTheme.colors.secondary
             )
         }
+    } else {
+        MenuScreen(
+            navController = navController,
+            myViewModel = myViewModel,
+            content = {
+                val permissionState =
+                    rememberPermissionState(permission = Manifest.permission.ACCESS_FINE_LOCATION)
+                LaunchedEffect(Unit) {
+                    permissionState.launchPermissionRequest()
+                }
+
+                if (permissionState.status.isGranted) {
+                    val context = LocalContext.current
+                    val fusedLocationProviderClient =
+                        remember { LocationServices.getFusedLocationProviderClient(context) }
+                    var lastKnownLocation by remember { mutableStateOf<ExerciseRoute.Location?>(null) }
+                    var deviceLatLng by remember { mutableStateOf(LatLng(0.0, 0.0)) }
+                    val cameraPositionState =
+                        rememberCameraPositionState {
+                            position = CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
+                        }
+
+                    val locationResult = fusedLocationProviderClient.getCurrentLocation(100, null)
+                    locationResult.addOnCompleteListener(context as MainActivity) { task ->
+                        if (task.isSuccessful) {
+                            lastKnownLocation = task.result
+                            deviceLatLng =
+                                LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
+                            cameraPositionState.position =
+                                CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
+                            myViewModel.changePosition(deviceLatLng)
+                            myViewModel.modificarEditingPosition(deviceLatLng)
+                        } else {
+                            Log.e("Error", "Exception: %s", task.exception)
+                        }
+                    }
+                    Box {
+                        Column {
+                            val categories: List<Categoria> by myViewModel.categories.observeAsState(
+                                emptyList()
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                OutlinedTextField(
+                                    value = texto,
+                                    onValueChange = { /* No permitimos cambios directos aquí */ },
+                                    enabled = false,
+                                    readOnly = true,
+                                    modifier = Modifier
+                                        .clickable { myViewModel.modifyExpandedMapa(true) }
+                                        .fillMaxWidth()
+                                )
+
+                                DropdownMenu(
+                                    expanded = myViewModel.getExpandedMapa(),
+                                    onDismissRequest = { myViewModel.modifyExpandedMapa(false) },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    // Opción para mostrar todos los marcadores
+                                    DropdownMenuItem(
+                                        text = { Text(text = "Mostrar Todos") },
+                                        onClick = {
+                                            myViewModel.modifyExpandedMapa(false)
+                                            myViewModel.getAllMarkers()
+                                            myViewModel.modifyDropDownText("Mostrar Todos")
+                                        })
+
+                                    // Opciones para las categorías
+                                    categories.forEach { categoria ->
+                                        DropdownMenuItem(
+                                            text = { Text(text = categoria.name) },
+                                            onClick = {
+                                                myViewModel.modifyExpandedMapa(false)
+                                                myViewModel.modifyDropDownText(categoria.name)
+                                            })
+                                    }
+                                }
+                            }
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.Bottom,
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                GoogleMap(
+                                    modifier = Modifier.fillMaxHeight(),
+                                    cameraPositionState = cameraPositionState,
+                                    onMapLongClick = {
+                                        myViewModel.changePosition(it)
+                                        myViewModel.modificarEditingPosition(it)
+                                        myViewModel.modifyShowBottomSheet(true)
+                                    },
+                                    properties = MapProperties(
+                                        isMyLocationEnabled = true,
+                                        isIndoorEnabled = true,
+                                        isBuildingEnabled = true,
+                                        isTrafficEnabled = true
+                                    )
+                                )
+                                {
+                                    if (showBottomSheet) {
+                                        ModalBottomSheet(
+                                            // tonalElevation =  BottomSheetDefaults.SheetPeekHeight,
+                                            // modifier = Modifier.fillMaxSize(),
+                                            onDismissRequest = {
+                                                myViewModel.modifyShowBottomSheet(false)
+                                            },
+                                            sheetState = sheetState
+                                        ) {
+                                            AddMarkerScreen(
+                                                MapsViewModel = myViewModel,
+                                                navController,
+                                                onCloseBottomSheet = {
+                                                    resetearParametros(myViewModel)
+                                                    scope.launch { sheetState.hide() }
+                                                        .invokeOnCompletion {
+                                                            if (!sheetState.isVisible) {
+                                                                myViewModel.modifyShowBottomSheet(
+                                                                    false
+                                                                )
+                                                            }
+                                                        }
+                                                },true
+                                            )
+                                        }
+                                    }
+
+                                    marcadores.forEach { marker ->
+                                        Marker(
+                                            state = MarkerState(
+                                                LatLng(
+                                                    marker.latitude,
+                                                    marker.longitude
+                                                )
+                                            ), // no los muestra en la posicion D:
+                                            title = marker.title,
+                                            snippet = marker.snippet,
+                                            icon = BitmapDescriptorFactory.defaultMarker(
+                                                when (marker.category.name) {
+                                                    "Favoritos" -> BitmapDescriptorFactory.HUE_CYAN
+                                                    "Likes" -> BitmapDescriptorFactory.HUE_YELLOW
+                                                    "Info" -> BitmapDescriptorFactory.HUE_GREEN
+                                                    else -> BitmapDescriptorFactory.HUE_RED
+                                                }
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        Button(
+                            onClick = {
+                                myViewModel.modifyShowBottomSheet(true)
+                            },
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .padding(start = 16.dp, bottom = 33.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Filled.Add, contentDescription = null) // Icono
+                            }
+                        }
+                    }
+                } else {
+                    PermissionDeclinedScreen()
+                }
+            })
     }
 }
 
