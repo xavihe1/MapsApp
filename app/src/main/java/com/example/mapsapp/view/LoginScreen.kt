@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -76,18 +78,39 @@ fun LoginScreen(navController: NavController) {
                 .padding(5.dp)
         )
 
-        TextField(
-            modifier = Modifier.padding(10.dp),
-            value = myText,
-            onValueChange = { myText = it },
-            label = { Text(text = "Enter your username/email") }
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(10.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = null,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            TextField(
+                modifier = Modifier.weight(1f),
+                value = myText,
+                onValueChange = { myText = it },
+                label = { Text(text = "Enter your username/email") }
+            )
+        }
 
-        TextField(
-            value = psswrd,
-            onValueChange = { psswrd = it },
-            label = { Text(text = "Enter your password") }
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(10.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Lock,
+                contentDescription = null,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            TextField(
+                modifier = Modifier.weight(1f),
+                value = psswrd,
+                onValueChange = { psswrd = it },
+                label = { Text(text = "Enter your password") }
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -97,7 +120,7 @@ fun LoginScreen(navController: NavController) {
         ) {
             Button(
                 modifier = Modifier.padding(10.dp),
-                onClick = { /* action on click */ },
+                onClick = { navController.navigate(Routes.Pantalla3.route) },
                 enabled = enabled,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -112,6 +135,7 @@ fun LoginScreen(navController: NavController) {
         }
     }
 }
+
 
 
 
