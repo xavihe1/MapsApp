@@ -114,14 +114,14 @@ fun MarkerListScreen(myViewModel: MapsViewModel, navController: NavController){
                                 if (it.photo != null && it.photo != "null") {
                                     GlideImage(
                                         model = it.photo,
-                                        contentDescription = "Image from storage",
+                                        contentDescription = "Imagen del storage",
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier.size(60.dp)
                                     )
                                 } else {
                                     Image(
                                         painterResource(id = R.drawable.maps_image),
-                                        "Map icon",
+                                        "Icono del mapa",
                                         Modifier.size(60.dp)
                                     )
                                 }
@@ -140,7 +140,7 @@ fun MarkerListScreen(myViewModel: MapsViewModel, navController: NavController){
                                     }) {
                                     Icon(
                                         imageVector = Icons.Default.Create,
-                                        contentDescription = "Edit marker"
+                                        contentDescription = "Editar marcador"
                                     )
                                 }
                                 IconButton(
@@ -152,7 +152,7 @@ fun MarkerListScreen(myViewModel: MapsViewModel, navController: NavController){
                                     }) {
                                     Icon(
                                         imageVector = Icons.Default.Delete,
-                                        contentDescription = "Remove marker"
+                                        contentDescription = "Borrar marcador"
                                     )
                                 }
                             }
@@ -161,7 +161,7 @@ fun MarkerListScreen(myViewModel: MapsViewModel, navController: NavController){
                 }
             }
         } else {
-            Text(text = "No markers for the moment",
+            Text(text = "Aún no hay marcadores",
                 fontSize = 20.sp,
                 modifier = Modifier.padding(20.dp))
         }
@@ -192,10 +192,10 @@ fun MySearchBar(myViewModel: MapsViewModel){
         ),
         onSearch =  { },
         placeholder = {
-            Text(text = "Search for a marker...")
+            Text(text = "Busca un marcador")
         },
         leadingIcon = {
-            Icon(imageVector = Icons.Filled.Refresh, contentDescription = "Erase query",
+            Icon(imageVector = Icons.Filled.Refresh, contentDescription = "Borrar",
                 tint = Color.Black,
                 modifier = Modifier.clickable {
                     myViewModel.onSearchTextChange("")

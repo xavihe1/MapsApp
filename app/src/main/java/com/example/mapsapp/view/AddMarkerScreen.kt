@@ -117,7 +117,7 @@ fun AddMarkerScreen(navController: NavController, myViewModel: MapsViewModel, se
                             newMarkerPhoto.toString()
                         )
                     ) },
-                placeholder = { Text(text = "Input marker title...") },
+                placeholder = { Text(text = "Pon un título") },
                 modifier = Modifier
                     .padding(3.dp)
                     .fillMaxWidth(0.8f)
@@ -137,7 +137,7 @@ fun AddMarkerScreen(navController: NavController, myViewModel: MapsViewModel, se
                             newMarkerPhoto.toString()
                         )
                     ) },
-                placeholder = { Text(text = "Input marker snippet...") },
+                placeholder = { Text(text = "Pon una foto") },
                 modifier = Modifier
                     .padding(3.dp)
                     .fillMaxWidth(0.8f),
@@ -145,7 +145,7 @@ fun AddMarkerScreen(navController: NavController, myViewModel: MapsViewModel, se
             TextField(
                 value = "$newMarkerLat",
                 onValueChange = { newMarkerLat = it.toDouble() },
-                placeholder = { Text(text = "Input marker latitude...") },
+                placeholder = { Text(text = "Latitud del marcador") },
                 modifier = Modifier
                     .padding(3.dp)
                     .fillMaxWidth(0.8f),
@@ -154,7 +154,7 @@ fun AddMarkerScreen(navController: NavController, myViewModel: MapsViewModel, se
             TextField(
                 value = "$newMarkerLong",
                 onValueChange = { newMarkerLong = it.toDouble() },
-                placeholder = { Text(text = "Input marker longitude...") },
+                placeholder = { Text(text = "Longitud del marcador") },
                 modifier = Modifier
                     .padding(3.dp)
                     .fillMaxWidth(0.8f),

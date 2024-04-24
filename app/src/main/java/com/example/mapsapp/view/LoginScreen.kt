@@ -143,6 +143,13 @@ fun LoginScreen(navController: NavController) {
         ) {
             Text(text = "Register")
         }
+
+        Button(
+            modifier = Modifier.padding(10.dp),
+            onClick = { navController.navigate(Routes.Pantalla3.route) },
+        ) {
+            Text(text = "VIP")
+        }
     }
     //Observamos el estado del goToNext para navegar a la siguiente pantalla
     val goToNext by myViewModel.goToNext.observeAsState()
