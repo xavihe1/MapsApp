@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -48,7 +49,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED
 import com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_YELLOW
 import com.google.android.gms.maps.model.LatLng
 
-@OptIn(ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AddMarkerScreen(navController: NavController, myViewModel: MapsViewModel, selectedMarker: Markers, nomFitxer: String? = null) {
     val markerReady by myViewModel.marcadorOn.observeAsState(false)
@@ -165,7 +166,7 @@ fun AddMarkerScreen(navController: NavController, myViewModel: MapsViewModel, se
             // Save marker
             Button(
                 onClick = {
-                    myViewModel.uploadImage(imageUrl)
+                    myViewModel.uploadImage(newMarkerPhoto, nomFitxer?: "${System.currentTimeMillis() }", selectedMarker.photo)
                 },
                 shape = RoundedCornerShape(10),
                 enabled = true,

@@ -33,9 +33,6 @@ import com.google.maps.android.compose.MapType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class MapsViewModel: ViewModel() {
     private val repository = Repository()
