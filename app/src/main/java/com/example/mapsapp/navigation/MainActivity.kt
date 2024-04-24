@@ -16,6 +16,7 @@ import com.example.mapsapp.ui.theme.MapsAppTheme
 import com.example.mapsapp.view.AddMarkerScreen
 import com.example.mapsapp.view.CameraScreen
 import com.example.mapsapp.view.GalleryScreen
+import com.example.mapsapp.view.Geolocation
 import com.example.mapsapp.view.LaunchScreen
 import com.example.mapsapp.view.LoginScreen
 import com.example.mapsapp.view.MapScreen
@@ -48,11 +49,12 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.Pantalla3.route) { MenuScreen(myViewModel, navigationController) }
                         composable(Routes.Pantalla4.route) { MapScreen(myViewModel, navigationController) }
                         composable(Routes.Pantalla5.route) { AddMarkerScreen(navigationController, myViewModel, selectedMarker = Markers()) }
-                        composable(Routes.Pantalla6.route) { MarkerListScreen(navigationController) }
+                        composable(Routes.Pantalla6.route) { MarkerListScreen(myViewModel, navigationController) }
                         composable(Routes.Pantalla7.route) { TakePhotoScreen(navigationController, myViewModel) }
                         composable(Routes.Pantalla8.route) { GalleryScreen(navigationController, myViewModel) }
                         composable(Routes.Pantalla9.route) { CameraScreen(navigationController, myViewModel) }
                         composable(Routes.Pantalla10.route) { RegisterScreen(navigationController) }
+                        composable(Routes.Pantalla11.route) { Geolocation(navigationController, myViewModel) }
                     }
                 }
             }

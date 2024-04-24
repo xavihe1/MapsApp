@@ -51,7 +51,7 @@ fun MapScreen(myViewModel: MapsViewModel, navController: NavController) {
             onMapLongClick = {
                 myViewModel.cambiarLocalitzacio(it)
                 cameraPositionState.position = CameraPosition.fromLatLngZoom(currentLocation, 15f)
-                myViewModel.modifyShowBottomSheet(true)
+                myViewModel.modifyShowBottomSheet()
             },
             properties = MapProperties(
                 mapType = mapType,

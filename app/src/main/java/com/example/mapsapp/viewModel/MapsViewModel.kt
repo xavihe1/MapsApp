@@ -37,7 +37,6 @@ import kotlinx.coroutines.launch
 class MapsViewModel: ViewModel() {
     private val repository = Repository()
 
-
     //MAP
     private val _bottomSheetVisible = MutableLiveData<Boolean>()
     val bottomSheetVisible: LiveData<Boolean> = _bottomSheetVisible
@@ -103,6 +102,7 @@ class MapsViewModel: ViewModel() {
         _editingPosition.value = newValue
     }
 
+    /*
     private var expandedMap by mutableStateOf(false)
 
     fun modifyExpandedMap(newValue: Boolean) {
@@ -112,6 +112,7 @@ class MapsViewModel: ViewModel() {
     fun getExpandedMap(): Boolean {
         return expandedMap
     }
+     */
 
     fun getMarkers() {
         var getMarkers = repository.getMarkers().whereEqualTo("userId", userId.value)
@@ -168,6 +169,17 @@ class MapsViewModel: ViewModel() {
         _markers.value = marker
     }
 
+
+    private val _buscant = MutableLiveData(false)
+    val buscant = _buscant
+
+    private val _buscarText = MutableLiveData("")
+    val buscarText = _buscarText
+
+    fun onSearchTextChange(text: String) {
+        _buscarText.value = text
+    }
+
     private var position = LatLng(41.4534265, 2.1837151)
     fun changePosition(newPosition: LatLng) {
         position = newPosition
@@ -205,16 +217,14 @@ class MapsViewModel: ViewModel() {
     fun modifyDropDownText(newText: String) {
         _dropDownText.value = newText
     }
-    fun modifyShowBottomSheet(newBoolean: Boolean) {
-        _showBottomSheet.value = newBoolean
+    fun modifyShowBottomSheet() {
+        _showBottomSheet.value = true
     }
 
     fun hideBottomSheet() {
         _showBottomSheet.value = false
         selectImage(null)
     }
-
-
 
 
     //CAMERA
@@ -259,7 +269,6 @@ class MapsViewModel: ViewModel() {
     }
 
 
-
     //FIREBASE CLOUD FIRESTORE
     private val _userList = MutableLiveData<List<User>>()
     val userList = _userList
@@ -272,8 +281,6 @@ class MapsViewModel: ViewModel() {
 
     private val _age = MutableLiveData<Int>()
     val age = _age
-
-
 
 
     //AUTHENTICATION
@@ -292,7 +299,6 @@ class MapsViewModel: ViewModel() {
     fun modifyProcessing(show: Boolean) {
         showProgressBar.value = show
     }
-
 
 
     //Operació SELECT
@@ -381,7 +387,6 @@ class MapsViewModel: ViewModel() {
         val userPrefs = UserPrefs(context)
         if (_stayLogged.value == true){
             CoroutineScope(Dispatchers.IO).launch {
-                println("JEJE ESTOY EN TRUE")
                 userPrefs.deleteUserPass()
             }
         } else {
@@ -403,9 +408,6 @@ class MapsViewModel: ViewModel() {
         return auth.currentUser != null
     }
 
-
-
-
     //FILTRAR DADES FIRESTORE
     fun selectFunctionsFirestore() {
         repository.getUsers()
@@ -416,8 +418,6 @@ class MapsViewModel: ViewModel() {
             .whereLessThanOrEqualTo("", "")
             .whereNotEqualTo("", "")
     }
-
-
 
 
     //FIREBASE STORAGE
@@ -438,5 +438,27 @@ class MapsViewModel: ViewModel() {
                 selectImageUrl(deleteUrl?.toUri())
                 confirmMarcadorOn(true)
             }
+    }
+
+
+    private val _permissionGranted = MutableLiveData(false)
+    val permissionGranted = _permissionGranted
+
+    private val _permissionDenied = MutableLiveData(false)
+    val permissionDenied = _permissionDenied
+
+    private val _showPermissionRationale = MutableLiveData(false)
+    val showPermissionRationale = _showPermissionRationale
+
+    fun setPermissionGranted(granted: Boolean) {
+        this.permissionGranted.value = granted
+    }
+
+    fun setPermissionRationale(should: Boolean) {
+        _showPermissionRationale.value = should
+    }
+
+    fun setPermissionDenied(denied: Boolean) {
+        _permissionDenied.value = denied
     }
 }

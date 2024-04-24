@@ -11,4 +11,5 @@ sealed class Routes(val route: String) {
     object Pantalla8: Routes("GalleryScreen")
     object Pantalla9: Routes("CameraScreen")
     object Pantalla10: Routes("RegisterScreen")
+    object Pantalla11: Routes("Geolocation")
 }
