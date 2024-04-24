@@ -98,7 +98,7 @@ fun RegisterScreen(navController: NavController) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Register")
                     Icon(
-                        imageVector = Icons.Default.ArrowForward,
+                        imageVector = Icons.Default.Person,
                         contentDescription = null,
                         modifier = Modifier.padding(start = 4.dp)
                     )
