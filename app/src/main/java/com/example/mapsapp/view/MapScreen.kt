@@ -62,6 +62,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.navigation.NavController
 import com.example.mapsapp.navigation.MainActivity
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -83,7 +84,7 @@ val REQUEST_LOCATION_PERMISSION = 123
     ExperimentalPermissionsApi::class
 )
 @Composable
-fun MapScreen(navController, myViewModel: MapsViewModel) {
+fun MapScreen(navController: NavController, myViewModel: MapsViewModel) {
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     val showBottomSheet by myViewModel.showBottomSheet.observeAsState(initial = false)
@@ -155,24 +156,24 @@ fun MapScreen(navController, myViewModel: MapsViewModel) {
                             ) {
                                 OutlinedTextField(
                                     value = texto,
-                                    onValueChange = { /* No permitimos cambios directos aquí */ },
+                                    onValueChange = {  },
                                     enabled = false,
                                     readOnly = true,
                                     modifier = Modifier
-                                        .clickable { myViewModel.modifyExpandedMapa(true) }
+                                        .clickable { myViewModel.modifyExpandedMap(true) }
                                         .fillMaxWidth()
                                 )
 
                                 DropdownMenu(
-                                    expanded = myViewModel.getExpandedMapa(),
-                                    onDismissRequest = { myViewModel.modifyExpandedMapa(false) },
+                                    expanded = myViewModel.getExpandedMap(),
+                                    onDismissRequest = { myViewModel.modifyExpandedMap(false) },
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     // Opción para mostrar todos los marcadores
                                     DropdownMenuItem(
                                         text = { Text(text = "Mostrar Todos") },
                                         onClick = {
-                                            myViewModel.modifyExpandedMapa(false)
+                                            myViewModel.modifyExpandedMap(false)
                                             myViewModel.getAllMarkers()
                                             myViewModel.modifyDropDownText("Mostrar Todos")
                                         })
@@ -182,7 +183,7 @@ fun MapScreen(navController, myViewModel: MapsViewModel) {
                                         DropdownMenuItem(
                                             text = { Text(text = categoria.name) },
                                             onClick = {
-                                                myViewModel.modifyExpandedMapa(false)
+                                                myViewModel.modifyExpandedMap(false)
                                                 myViewModel.modifyDropDownText(categoria.name)
                                             })
                                     }
@@ -211,8 +212,6 @@ fun MapScreen(navController, myViewModel: MapsViewModel) {
                                 {
                                     if (showBottomSheet) {
                                         ModalBottomSheet(
-                                            // tonalElevation =  BottomSheetDefaults.SheetPeekHeight,
-                                            // modifier = Modifier.fillMaxSize(),
                                             onDismissRequest = {
                                                 myViewModel.modifyShowBottomSheet(false)
                                             },

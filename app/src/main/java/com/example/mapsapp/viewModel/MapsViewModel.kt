@@ -36,6 +36,7 @@ import java.util.Locale
 class MapsViewModel: ViewModel() {
     private val repository = Repository()
 
+
     //MAP
     private val _bottomSheetVisible = MutableLiveData<Boolean>()
     val bottomSheetVisible: LiveData<Boolean> = _bottomSheetVisible
@@ -48,6 +49,80 @@ class MapsViewModel: ViewModel() {
         val marker = MarkerOptions().position(position).title(name).snippet(description)
         googleMap?.addMarker(marker)
     }
+
+    private val _showBottomSheet = MutableLiveData<Boolean>()
+    val showBottomSheet = _showBottomSheet
+
+    private val _markers = MutableLiveData<MutableList<Markers>>()
+    val markers: LiveData<MutableList<Markers>> = _markers
+
+    private val _dropDownText = MutableLiveData<String>()
+    val dropDownText: LiveData<String> = _dropDownText
+
+    private val _loadingMarkers = MutableLiveData(true)
+    val loadingMarkers = _loadingMarkers
+
+    private var _editingPosition = MutableLiveData<LatLng>()
+    val editingPosition = _editingPosition
+
+    fun modificarEditingPosition(newValue: LatLng){
+        _editingPosition.value = newValue
+    }
+
+    private var expandedMap by mutableStateOf(false)
+
+    fun modifyExpandedMap(newValue: Boolean) {
+        expandedMap = newValue
+    }
+
+    fun getExpandedMap(): Boolean {
+        return expandedMap
+    }
+
+    fun getMarkers() {
+
+    }
+
+    private var position = LatLng(41.4534265, 2.1837151)
+    fun changePosition(newPosition: LatLng) {
+        position = newPosition
+    }
+
+    fun getAllMarkers() {
+        //modifyLoadingMarkers(false)
+        repository.getMarkers()
+            .whereEqualTo("owner", _loggedUser.value)
+            .addSnapshotListener { value, error ->
+                if (error != null) {
+                    Log.e("Firestore error", error.message.toString())
+                    return@addSnapshotListener
+                }
+                val tempList = mutableListOf<Markers>()
+                for (dc: DocumentChange in value?.documentChanges!!) {
+                    if (dc.type == DocumentChange.Type.ADDED) {
+                        val newMarker = dc.document.toObject(Markers::class.java)
+                        newMarker.markerId = dc.document.id
+                        newMarker.latitude =
+                            dc.document.get("positionLatitude").toString().toDouble()
+                        newMarker.longitude =
+                            dc.document.get("positionLongitude").toString().toDouble()
+                        newMarker.photoReference = dc.document.get("linkImage").toString()
+                        tempList.add(newMarker)
+                        Log.d("Success",("Adios :( $newMarker"))
+                    }
+
+                }
+                _markers.value = tempList
+            }
+    }
+
+    fun modifyDropDownText(newText: String) {
+        _dropDownText.value = newText
+    }
+    fun modifyShowBottomSheet(newBoolean: Boolean) {
+        _showBottomSheet.value = newBoolean
+    }
+
 
 
 
@@ -108,6 +183,8 @@ class MapsViewModel: ViewModel() {
     val age = _age
 
 
+
+
     //AUTHENTICATION
     private var _goToNext = MutableLiveData(false)
     val goToNext = _goToNext
@@ -148,6 +225,7 @@ class MapsViewModel: ViewModel() {
     }
 
 
+
     //Operació SELECT
     fun getUser(userId: String) {
         repository.getUser(userId).addSnapshotListener { value, error ->
@@ -169,20 +247,25 @@ class MapsViewModel: ViewModel() {
         }
     }
 
+
     //Operació INSERT
     fun addUser(user: User) {
         repository.addUser(user)
     }
+
 
     //Operació UPDATE
     fun editUser(editedUser: User) {
         repository.editUser(editedUser)
     }
 
+
     //Operació DELETE
     fun deleteUser(userId: String) {
         repository.deleteUser(userId)
     }
+
+
 
 
     //AUTHENTICATION
@@ -257,6 +340,7 @@ class MapsViewModel: ViewModel() {
 
 
 
+
     //FILTRAR DADES FIRESTORE
     fun selectFunctionsFirestore() {
         repository.getUsers()
@@ -267,6 +351,7 @@ class MapsViewModel: ViewModel() {
             .whereLessThanOrEqualTo("", "")
             .whereNotEqualTo("", "")
     }
+
 
 
 
@@ -289,78 +374,4 @@ class MapsViewModel: ViewModel() {
             }
     }
 
-    //MAPA
-    private val _showBottomSheet = MutableLiveData<Boolean>()
-    val showBottomSheet = _showBottomSheet
-
-    private val _markers = MutableLiveData<MutableList<Markers>>()
-    val markers: LiveData<MutableList<Markers>> = _markers
-
-    private val _dropDownText = MutableLiveData<String>()
-    val dropDownText: LiveData<String> = _dropDownText
-
-    private val _loadingMarkers = MutableLiveData(true)
-    val loadingMarkers = _loadingMarkers
-
-    private var _editingPosition = MutableLiveData<LatLng>()
-    val editingPosition = _editingPosition
-
-    fun modificarEditingPosition(newValue: LatLng){
-        _editingPosition.value = newValue
-    }
-
-    private var expandedMap by mutableStateOf(false)
-
-    fun modifyExpandedMapa(valorNuevo: Boolean) {
-        expandedMap = valorNuevo
-    }
-
-    fun getExpandedMapa(): Boolean {
-        return expandedMap
-    }
-
-
-    fun getMarkers() {
-
-    }
-
-    private var position = LatLng(41.4534265, 2.1837151)
-    fun changePosition(positionNueva: LatLng) {
-        position = positionNueva
-    }
-
-    fun getAllMarkers() {
-        //modifyLoadingMarkers(false)
-        repository.getMarkers()
-            .whereEqualTo("owner", _loggedUser.value)
-            .addSnapshotListener { value, error ->
-                if (error != null) {
-                    Log.e("Firestore error", error.message.toString())
-                    return@addSnapshotListener
-                }
-                val tempList = mutableListOf<Markers>()
-                for (dc: DocumentChange in value?.documentChanges!!) {
-                    if (dc.type == DocumentChange.Type.ADDED) {
-                        val newMarker = dc.document.toObject(Markers::class.java)
-                        newMarker.markerId = dc.document.id
-                        newMarker.latitude =
-                            dc.document.get("positionLatitude").toString().toDouble()
-                        newMarker.longitude =
-                            dc.document.get("positionLongitude").toString().toDouble()
-                        newMarker.photoReference = dc.document.get("linkImage").toString()
-                        tempList.add(newMarker)
-                        Log.d("Success",("Adios :( $newMarker"))
-                    }
-
-                }
-                _markers.value = tempList
-            }
-    }
-
-    fun modifyDropDownText(nuevoTexto: String) {
-        _dropDownText.value = nuevoTexto
-    }
-    fun modifyShowBottomSheet(nuevoBoolean: Boolean) {
-        _showBottomSheet.value = nuevoBoolean
-    }
 }

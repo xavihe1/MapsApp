@@ -137,7 +137,6 @@ fun LoginScreen(navController: NavController) {
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Nuevo botón para registrarse
         Button(
             modifier = Modifier.padding(10.dp),
             onClick = { navController.navigate(Routes.Pantalla10.route) },
