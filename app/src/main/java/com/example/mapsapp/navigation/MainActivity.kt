@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.mapsapp.model.Markers
 import com.example.mapsapp.ui.theme.MapsAppTheme
 import com.example.mapsapp.view.AddMarkerScreen
 import com.example.mapsapp.view.CameraScreen
@@ -45,8 +46,8 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.Pantalla1.route) { LaunchScreen(navigationController) }
                         composable(Routes.Pantalla2.route) { LoginScreen(navigationController) }
                         composable(Routes.Pantalla3.route) { MenuScreen(myViewModel, navigationController) }
-                        composable(Routes.Pantalla4.route) { MapScreen(navigationController, myViewModel) }
-                        composable(Routes.Pantalla5.route) { AddMarkerScreen(navigationController) }
+                        composable(Routes.Pantalla4.route) { MapScreen(myViewModel, navigationController) }
+                        composable(Routes.Pantalla5.route) { AddMarkerScreen(navigationController, myViewModel, selectedMarker = Markers()) }
                         composable(Routes.Pantalla6.route) { MarkerListScreen(navigationController) }
                         composable(Routes.Pantalla7.route) { TakePhotoScreen(navigationController, myViewModel) }
                         composable(Routes.Pantalla8.route) { GalleryScreen(navigationController, myViewModel) }

@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,10 +23,13 @@ import com.example.mapsapp.model.User
 import com.example.mapsapp.model.UserPrefs
 import com.example.mapsapp.navigation.Routes
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.firestore.EventListener
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.FirebaseStorage
+import com.google.maps.android.compose.MapType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,16 +49,15 @@ class MapsViewModel: ViewModel() {
         _bottomSheetVisible.value = visible
     }
 
-    fun addMarker(name: String, description: String, position: LatLng) {
-        val marker = MarkerOptions().position(position).title(name).snippet(description)
-        googleMap?.addMarker(marker)
-    }
+    private val _filtrarColors = MutableLiveData(listOf<Float>())
+    val filtrarColors = _filtrarColors
+
 
     private val _showBottomSheet = MutableLiveData<Boolean>()
     val showBottomSheet = _showBottomSheet
 
-    private val _markers = MutableLiveData<MutableList<Markers>>()
-    val markers: LiveData<MutableList<Markers>> = _markers
+    private val _markers = MutableLiveData<Markers?>(null)
+    val markers = _markers
 
     private val _dropDownText = MutableLiveData<String>()
     val dropDownText: LiveData<String> = _dropDownText
@@ -64,6 +67,40 @@ class MapsViewModel: ViewModel() {
 
     private var _editingPosition = MutableLiveData<LatLng>()
     val editingPosition = _editingPosition
+
+    private val _localitzacioSeleccionada = MutableLiveData(LatLng(0.0, 0.0))
+    val localitzacioSeleccionada = _localitzacioSeleccionada
+
+    private val _tipusMapa = MutableLiveData(MapType.NORMAL)
+    val tipusMapa = _tipusMapa
+
+    private val _llistaMarcadors = MutableLiveData(mutableListOf<Markers>())
+    val llistaMarcadors = _llistaMarcadors
+
+    private val _marcadorOn = MutableLiveData(false)
+    val marcadorOn = _marcadorOn
+
+    fun confirmMarcadorOn(guardar: Boolean) {
+        _marcadorOn.value = guardar
+    }
+
+    private val _imatgeSeleccionada = MutableLiveData<Uri?>(null)
+    val imatgeSeleccionada = _imatgeSeleccionada
+
+    private val _urlImage = MutableLiveData<Uri?>(null)
+    val urlImatge = _urlImage
+
+    fun selectImage(image: Uri?) {
+        _imatgeSeleccionada.value = image
+    }
+
+    fun selectImageUrl(imageUrl: Uri?) {
+        _urlImage.value = imageUrl
+    }
+
+    fun cambiarLocalitzacio(posicio: LatLng) {
+        _localitzacioSeleccionada.value = posicio
+    }
 
     fun modificarEditingPosition(newValue: LatLng){
         _editingPosition.value = newValue
@@ -80,7 +117,58 @@ class MapsViewModel: ViewModel() {
     }
 
     fun getMarkers() {
+        var getMarkers = repository.getMarkers().whereEqualTo("userId", userId.value)
+        if (!filtrarColors.value!!.isEmpty()) getMarkers = getMarkers.whereIn("markerColor", filtrarColors.value!!)
 
+        getMarkers.addSnapshotListener(object: EventListener<QuerySnapshot> {
+            override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
+                if(error != null){
+                    Log.e("Firestore error", error.message.toString())
+                    return
+                }
+                val tempList = mutableListOf<Markers>()
+                for(dc: DocumentChange in value?.documentChanges!!){
+                    if(dc.type == DocumentChange.Type.ADDED){
+                        val newMarker = Markers(
+                            dc.document.get("userId").toString(),
+                            dc.document.id,
+                            LatLng(dc.document.get("markerLatitude")!!.toString().toDouble(),
+                                dc.document.get("markerLongitude")!!.toString().toDouble()),
+                            dc.document.get("markerTitle")!!.toString(),
+                            dc.document.get("markerSnippet")!!.toString(),
+                            dc.document.get("markerColor")!!.toString().toFloat(),
+                            dc.document.get("markerPhoto")?.toString()
+                        )
+                        tempList.add(newMarker)
+                    }
+                }
+                _llistaMarcadors.value = tempList
+            }
+        })
+    }
+    fun guardarMarcadors(nouMarcador: Markers) {
+        repository.editarMarcador(nouMarcador)
+    }
+
+    fun editarMarcador(editMarker: Markers) {
+        repository.editarMarcador(editMarker)
+    }
+
+    fun esborrarMarcadors(marcadorEsborrat: Markers) {
+        repository.deleteMarker(marcadorEsborrat)
+    }
+
+    fun esborrarImatge(url: String) {
+        try {
+            val storage = FirebaseStorage.getInstance().getReferenceFromUrl(url)
+            storage.delete()
+        } catch (e: Exception) {
+            Log.i("esborrarImatge", "Exception caught trying to removing an image")
+        }
+    }
+
+    fun selectMarker(marker: Markers?) {
+        _markers.value = marker
     }
 
     private var position = LatLng(41.4534265, 2.1837151)
@@ -98,21 +186,22 @@ class MapsViewModel: ViewModel() {
                     return@addSnapshotListener
                 }
                 val tempList = mutableListOf<Markers>()
-                for (dc: DocumentChange in value?.documentChanges!!) {
-                    if (dc.type == DocumentChange.Type.ADDED) {
-                        val newMarker = dc.document.toObject(Markers::class.java)
-                        newMarker.markerId = dc.document.id
-                        newMarker.latitude =
-                            dc.document.get("positionLatitude").toString().toDouble()
-                        newMarker.longitude =
-                            dc.document.get("positionLongitude").toString().toDouble()
-                        newMarker.photoReference = dc.document.get("linkImage").toString()
+                for(dc: DocumentChange in value?.documentChanges!!){
+                    if(dc.type == DocumentChange.Type.ADDED){
+                        val newMarker = Markers(
+                            dc.document.get("userId").toString(),
+                            dc.document.id,
+                            LatLng(dc.document.get("markerLatitude")!!.toString().toDouble(),
+                                dc.document.get("markerLongitude")!!.toString().toDouble()),
+                            dc.document.get("markerTitle")!!.toString(),
+                            dc.document.get("markerSnippet")!!.toString(),
+                            dc.document.get("markerColor")!!.toString().toFloat(),
+                            dc.document.get("markerPhoto")?.toString()
+                        )
                         tempList.add(newMarker)
-                        Log.d("Success",("Adios :( $newMarker"))
                     }
-
                 }
-                _markers.value = tempList
+                _llistaMarcadors.value = tempList
             }
     }
 
@@ -121,6 +210,11 @@ class MapsViewModel: ViewModel() {
     }
     fun modifyShowBottomSheet(newBoolean: Boolean) {
         _showBottomSheet.value = newBoolean
+    }
+
+    fun hideBottomSheet() {
+        _showBottomSheet.value = false
+        selectImage(null)
     }
 
 
@@ -224,30 +318,6 @@ class MapsViewModel: ViewModel() {
         }
     }
 
-
-
-    //Operació SELECT
-    fun getUser(userId: String) {
-        repository.getUser(userId).addSnapshotListener { value, error ->
-            if (error != null) {
-                Log.w("UserRepository", "Listen Failed.", error)
-                return@addSnapshotListener
-            }
-            if (value != null && value.exists()) {
-                val user = value.toObject(User::class.java)
-                if (user != null) {
-                    user.userId = userId
-                }
-                _actualUser.value = user
-                _userName.value = _actualUser.value!!.userName
-                _age.value = _actualUser.value!!.age.toString()
-            } else {
-                Log.d("UserRepository", "Current data: null")
-            }
-        }
-    }
-
-
     //Operació INSERT
     fun addUser(user: User) {
         repository.addUser(user)
@@ -264,8 +334,6 @@ class MapsViewModel: ViewModel() {
     fun deleteUser(userId: String) {
         repository.deleteUser(userId)
     }
-
-
 
 
     //AUTHENTICATION
@@ -356,22 +424,22 @@ class MapsViewModel: ViewModel() {
 
 
     //FIREBASE STORAGE
-    var uri: Uri? = null
-    fun uploadImage(imageUri: Uri) {
-        val formatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault())
-        val now = Date()
-        val fileName = formatter.format(now)
-        val storage = FirebaseStorage.getInstance().getReference("images/$fileName")
-        storage.putFile(imageUri)
+    fun uploadImage(imageUri: Uri?, nomFitxer: String, deleteUrl: String?) {
+        val storage = FirebaseStorage.getInstance().getReference("images/$nomFitxer")
+        storage.putFile(imageUri?: "null".toUri())
             .addOnSuccessListener {
-                Log.i("IMAGE UPLOAD", "Image upload successfully")
+                Log.i("IMAGE UPLOAD", "Image uploaded successfully")
                 storage.downloadUrl.addOnSuccessListener {
-                    Log.i("IMAGEN", it.toString())
+                    println("Image saved in Storage: $it")
+                    selectImageUrl(it)
+                    if (deleteUrl != null && deleteUrl != "null") esborrarImatge(deleteUrl)
+                    confirmMarcadorOn(true)
                 }
             }
             .addOnFailureListener {
                 Log.i("IMAGE UPLOAD", "Image upload failed")
+                selectImageUrl(deleteUrl?.toUri())
+                confirmMarcadorOn(true)
             }
     }
-
 }
